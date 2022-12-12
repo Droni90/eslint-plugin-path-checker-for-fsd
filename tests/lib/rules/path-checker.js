@@ -1,6 +1,6 @@
 /**
- * @fileoverview path checker fsd
- * @author Andrey
+ * @fileoverview feature sliced relative path checker
+ * @author timur
  */
 "use strict";
 
@@ -9,23 +9,40 @@
 //------------------------------------------------------------------------------
 
 const rule = require("../../../lib/rules/path-checker"),
-  RuleTester = require("eslint").RuleTester;
+    RuleTester = require("eslint").RuleTester;
 
 
 //------------------------------------------------------------------------------
 // Tests
 //------------------------------------------------------------------------------
 
-const ruleTester = new RuleTester();
+const ruleTester = new RuleTester({
+  parserOptions: {ecmaVersion: 6, sourceType: 'module'}
+});
 ruleTester.run("path-checker", rule, {
   valid: [
-    // give me some code that won't trigger a warning
+    {
+      filename: 'C:\\Users\\tim\\Desktop\\javascript\\production_project\\src\\entities\\Article',
+      code: "import { addCommentFormActions, addCommentFormReducer } from '../../model/slices/addCommentFormSlice'",
+      errors: [],
+    },
   ],
 
   invalid: [
     {
-      code: "fsd",
-      errors: [{ message: "Fill me in.", type: "Me too" }],
+      filename: 'C:\\Users\\tim\\Desktop\\javascript\\production_project\\src\\entities\\Article',
+      code: "import { addCommentFormActions, addCommentFormReducer } from '@/entities/Article/model/slices/addCommentFormSlice'",
+      errors: [{ message: "В рамках одного слайса все пути должны быть относительными"}],
+      options: [
+        {
+          alias: '@'
+        }
+      ]
+    },
+    {
+      filename: 'C:\\Users\\tim\\Desktop\\javascript\\production_project\\src\\entities\\Article',
+      code: "import { addCommentFormActions, addCommentFormReducer } from 'entities/Article/model/slices/addCommentFormSlice'",
+      errors: [{ message: "В рамках одного слайса все пути должны быть относительными"}],
     },
   ],
 });
